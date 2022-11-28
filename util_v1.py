@@ -1,4 +1,4 @@
-import re
+import os
 import boto3
 import time
 from boto3 import client as boto3_client
@@ -153,7 +153,7 @@ def get_found_markchar_sn_list_from_query(query) -> None:
             'Database': 'gluejob'
         },
         ResultConfiguration={
-            "OutputLocation": 's3://hang-test-query-v1/athena/',
+            "OutputLocation": 's3://hang-test-query-v2/athena/',
         },
         WorkGroup='primary'
     )
@@ -283,8 +283,8 @@ def get_mark_type(serial_no):
             goods_n_service: The Goods and Services whose trademark is used for (can be any string), e.g:  Lawn mowers, namely walk-behind lawn mowers and ride-on lawn mowers of less than 12 HP .
     """
     msg = {"serial_no": serial_no, "valid_status_code" : VALID_STATUS_MARK_CODE}
-    invoke_response = lambda_client.invoke(FunctionName="CheckMarkType",  # CheckMarkType
-                                          InvocationType='RequestResponse', # RequestResponse  Event
+    invoke_response = lambda_client.invoke(FunctionName= os.environ["check_marktype_func_name"],  # CheckMarkType
+                                          InvocationType='RequestResponse', # RequestResponse / Event
                                           Payload=json.dumps(msg))
     print( "Response: ") 
     result = json.load(invoke_response['Payload'])
